@@ -10,7 +10,8 @@ class GameStats:
         self.settings = ai_game.settings
         self.reset_stats()
         # High score should never be reset.
-        self.high_score = json.load(high_score_read)
+        self.high_score_file = 'high_score.json'
+        self.high_score = self.load_high_score()
 
     def reset_stats(self):
         """Initialize statistics that can change during the game."""
@@ -18,4 +19,15 @@ class GameStats:
         self.score = 0
         self.level = 1
 
-high_score_read = open('high_score.json')
+    def load_high_score(self):
+        try:
+            with open(self.high_score_file, 'r') as file:
+                return json.load(file)
+        except(FileNotFoundError, json.JSONDecodeError):
+            return 0
+
+    def save_high_score(self):
+        """Save high score to a file."""
+        with open(self.high_score_file, 'w') as file:
+            json.dump(self.high_score, file)
+

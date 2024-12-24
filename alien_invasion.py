@@ -92,7 +92,8 @@ class AlienInvasion:
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
         elif event.key == pygame.K_p:
-            self._start_game()
+            self._reset_game_statistics()
+
     def _check_keyup_events(self, event):
         """Respond to key releases."""
         if event.key == pygame.K_RIGHT:
@@ -104,12 +105,16 @@ class AlienInvasion:
         """Start a new game when player clicks Play."""
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
-            self.settings.initialize_dynamic_settings()
-            # Reset the game statistics.
-            self.stats.reset_stats()
-            self.sb.prep_score()
-            self.sb.prep_level()
-            self._start_game()        
+            self.settings.initialize_dynamic_settings()  
+            self._reset_game_statistics()  
+
+    def _reset_game_statistics(self):
+        # Reset the game statistics.
+        self.stats.reset_stats()
+        self.sb.prep_score() 
+        self.sb.prep_level()
+        self.sb.prep_ships()
+        self._start_game()  
 
     def _start_game(self):
         if  not self.game_active:
@@ -169,8 +174,9 @@ class AlienInvasion:
     def _ship_hit(self):
         """Respond to the ship being hit by an alien."""
         if self.stats.ships_left > 0:
-            # Decrement ships left.
+            # Decrement ships left, and update scoreboard.
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             # Get rid of any remaining bullets and aliens.
             self.bullets.empty()
